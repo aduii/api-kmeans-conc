@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -19,7 +20,7 @@ type Prueba struct {
 	Age         int     `json:"edad"`
 	Sex         int     `json:"sexo"`
 	Institution string  `json:"institucion"`
-	Locale      *Locale `json:"localidad"`
+	Locale      *Locale `json:"localidad,omitempty"`
 }
 
 type Locale struct {
@@ -35,6 +36,7 @@ var id_prueba int
 //EndPoints
 func GetPruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
+	w.Header().Set("Content-Type", "application/json")
 	for _, item := range pruebas {
 		id_prueba, _ = strconv.Atoi(params["id"])
 		if item.Id == id_prueba {
@@ -42,10 +44,13 @@ func GetPruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
-	json.NewEncoder(w).Encode(&Prueba{})
+	out_msg := fmt.Sprint("Prueba no encontrada con id ", id_prueba)
+	json.NewEncoder(w).Encode(out_msg)
+	// json.NewEncoder(w).Encode(&Prueba{})
 }
 
 func GetpruebasEndpoint(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(pruebas)
 }
 
@@ -56,8 +61,8 @@ func CreatePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	id_prueba, _ = strconv.Atoi(params["id"])
 	Prueba.Id = id_prueba
 	pruebas = append(pruebas, Prueba)
-	json.NewEncoder(w).Encode(pruebas)
-
+	out_msg := fmt.Sprint("Prueba creada con id ", id_prueba)
+	json.NewEncoder(w).Encode(out_msg)
 }
 
 func DeletePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
@@ -69,7 +74,8 @@ func DeletePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 			break
 		}
 	}
-	json.NewEncoder(w).Encode(pruebas)
+	out_msg := fmt.Sprint("Prueba eliminada con id ", id_prueba)
+	json.NewEncoder(w).Encode(out_msg)
 }
 
 func stoInt(v string) int {
@@ -84,8 +90,7 @@ func checkError(msg string, err error) {
 }
 
 func Add() {
-	// pruebas = append(pruebas, Prueba{Id: 1, Date: "15/04/2020", Type: "Molecular", Result: 1, Age: 27, Sex: 0, Institution: "ESSALUD", Locale: &Locale{Department: "Lima", Province: "Huaral", District: "Huaral"}})
-	// pruebas = append(pruebas, Prueba{Id: 2, Date: "15/04/2020", Type: "Molecular", Result: 1, Age: 27, Sex: 0, Institution: "ESSALUD", Locale: &Locale{Department: "Lima", Province: "Huaral", District: "Huaral"}})
+	// pruebas = append(pruebas, Prueba{Id: 1, Date: "15/04/2020", Type: "HISOPADO NASAL Y FARINGEO", Result: 1, Age: 27, Sex: 0, Institution: "ESSALUD", Locale: &Locale{Department: "Lima", Province: "Huaral", District: "Huaral"}})
 
 	// adding example data
 	filepath := "data/data2.csv"
