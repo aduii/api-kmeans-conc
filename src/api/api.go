@@ -1,35 +1,16 @@
 package api
 
 import (
-	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
+
+	km "github.com/aduii/api-kmeans-conc/src/kmeans"
 
 	"github.com/gorilla/mux"
 )
-
-type Prueba struct {
-	Id          int     `json:"id"`
-	Date        string  `json:"fecha"`
-	Type        string  `json:"tipo-muestra"`
-	Result      int     `json:"resultado"`
-	Age         int     `json:"edad"`
-	Sex         int     `json:"sexo"`
-	Institution string  `json:"institucion"`
-	Locale      *Locale `json:"localidad,omitempty"`
-}
-
-type Locale struct {
-	Department string `json:"departamento"`
-	Province   string `json:"provincia"`
-	District   string `json:"distrito"`
-}
-
-var Pruebas []Prueba
 
 var id_prueba int
 
@@ -37,7 +18,7 @@ var id_prueba int
 func GetPruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	w.Header().Set("Content-Type", "application/json")
-	for _, item := range Pruebas {
+	for _, item := range km.Pruebas2 {
 		id_prueba, _ = strconv.Atoi(params["id"])
 		if item.Id == id_prueba {
 			json.NewEncoder(w).Encode(item)
@@ -51,16 +32,16 @@ func GetPruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 
 func GetPruebasEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(Pruebas)
+	json.NewEncoder(w).Encode(km.Pruebas2)
 }
 
 func CreatePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	var Prueba Prueba
+	var Prueba km.Prueba
 	_ = json.NewDecoder(req.Body).Decode(&Prueba)
 	id_prueba, _ = strconv.Atoi(params["id"])
 	Prueba.Id = id_prueba
-	Pruebas = append(Pruebas, Prueba)
+	km.Pruebas2 = append(km.Pruebas2, Prueba)
 	out_msg := fmt.Sprint("Prueba creada con id ", id_prueba)
 	json.NewEncoder(w).Encode(out_msg)
 }
@@ -68,9 +49,9 @@ func CreatePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 func DeletePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	id_prueba, _ = strconv.Atoi(params["id"])
-	for index, item := range Pruebas {
+	for index, item := range km.Pruebas2 {
 		if item.Id == id_prueba {
-			Pruebas = append(Pruebas[:index], Pruebas[index+1:]...)
+			km.Pruebas2 = append(km.Pruebas2[:index], km.Pruebas2[index+1:]...)
 			break
 		}
 	}
@@ -78,47 +59,7 @@ func DeletePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(out_msg)
 }
 
-func stoInt(v string) int {
-	vint, _ := strconv.Atoi(v)
-	return vint
-}
-
-func checkError(msg string, err error) {
-	if err != nil {
-		log.Fatal(msg, err)
-	}
-}
-
-func Add() {
-	// Pruebas = append(Pruebas, Prueba{Id: 1, Date: "15/04/2020", Type: "HISOPADO NASAL Y FARINGEO", Result: 1, Age: 27, Sex: 0, Institution: "ESSALUD", Locale: &Locale{Department: "Lima", Province: "Huaral", District: "Huaral"}})
-
-	// adding example data
-	filepath := "data/data2.csv"
-	openfile, err := os.Open(filepath)
-	checkError("Error in opening the file\n", err)
-	filedata, err := csv.NewReader(openfile).ReadAll()
-	checkError("Error in reading the file\n", err)
-
-	for i, value := range filedata {
-		Pruebas = append(Pruebas, Prueba{
-			Id:          i + 1,
-			Date:        value[1],
-			Type:        value[2],
-			Result:      stoInt(value[3]),
-			Age:         stoInt(value[4]),
-			Sex:         stoInt(value[5]),
-			Institution: value[6],
-			Locale: &Locale{
-				Department: value[7],
-				Province:   value[8],
-				District:   value[9],
-			}})
-	}
-
-}
-
 func HandleFunc() {
-	//EndPoints
 	router := mux.NewRouter()
 	port := ":3000"
 	router.HandleFunc("/pruebas", GetPruebasEndpoint).Methods("GET")

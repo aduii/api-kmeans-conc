@@ -1,4 +1,4 @@
-module api-kmeans-conc
+module github.com/aduii/api-kmeans-conc
 
 go 1.16
 
