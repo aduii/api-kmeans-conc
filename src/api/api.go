@@ -29,7 +29,7 @@ type Locale struct {
 	District   string `json:"distrito"`
 }
 
-var pruebas []Prueba
+var Pruebas []Prueba
 
 var id_prueba int
 
@@ -37,7 +37,7 @@ var id_prueba int
 func GetPruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	w.Header().Set("Content-Type", "application/json")
-	for _, item := range pruebas {
+	for _, item := range Pruebas {
 		id_prueba, _ = strconv.Atoi(params["id"])
 		if item.Id == id_prueba {
 			json.NewEncoder(w).Encode(item)
@@ -49,9 +49,9 @@ func GetPruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	// json.NewEncoder(w).Encode(&Prueba{})
 }
 
-func GetpruebasEndpoint(w http.ResponseWriter, req *http.Request) {
+func GetPruebasEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(pruebas)
+	json.NewEncoder(w).Encode(Pruebas)
 }
 
 func CreatePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
@@ -60,7 +60,7 @@ func CreatePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	_ = json.NewDecoder(req.Body).Decode(&Prueba)
 	id_prueba, _ = strconv.Atoi(params["id"])
 	Prueba.Id = id_prueba
-	pruebas = append(pruebas, Prueba)
+	Pruebas = append(Pruebas, Prueba)
 	out_msg := fmt.Sprint("Prueba creada con id ", id_prueba)
 	json.NewEncoder(w).Encode(out_msg)
 }
@@ -68,9 +68,9 @@ func CreatePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 func DeletePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	id_prueba, _ = strconv.Atoi(params["id"])
-	for index, item := range pruebas {
+	for index, item := range Pruebas {
 		if item.Id == id_prueba {
-			pruebas = append(pruebas[:index], pruebas[index+1:]...)
+			Pruebas = append(Pruebas[:index], Pruebas[index+1:]...)
 			break
 		}
 	}
@@ -90,7 +90,7 @@ func checkError(msg string, err error) {
 }
 
 func Add() {
-	// pruebas = append(pruebas, Prueba{Id: 1, Date: "15/04/2020", Type: "HISOPADO NASAL Y FARINGEO", Result: 1, Age: 27, Sex: 0, Institution: "ESSALUD", Locale: &Locale{Department: "Lima", Province: "Huaral", District: "Huaral"}})
+	// Pruebas = append(Pruebas, Prueba{Id: 1, Date: "15/04/2020", Type: "HISOPADO NASAL Y FARINGEO", Result: 1, Age: 27, Sex: 0, Institution: "ESSALUD", Locale: &Locale{Department: "Lima", Province: "Huaral", District: "Huaral"}})
 
 	// adding example data
 	filepath := "data/data2.csv"
@@ -100,7 +100,7 @@ func Add() {
 	checkError("Error in reading the file\n", err)
 
 	for i, value := range filedata {
-		pruebas = append(pruebas, Prueba{
+		Pruebas = append(Pruebas, Prueba{
 			Id:          i + 1,
 			Date:        value[1],
 			Type:        value[2],
@@ -120,10 +120,12 @@ func Add() {
 func HandleFunc() {
 	//EndPoints
 	router := mux.NewRouter()
-	router.HandleFunc("/pruebas", GetpruebasEndpoint).Methods("GET")
+	port := ":3000"
+	router.HandleFunc("/pruebas", GetPruebasEndpoint).Methods("GET")
 	router.HandleFunc("/pruebas/{id}", GetPruebaEndpoint).Methods("GET")
 	router.HandleFunc("/pruebas/{id}", CreatePruebaEndpoint).Methods("POST")
 	router.HandleFunc("/pruebas/{id}", DeletePruebaEndpoint).Methods("DELETE")
 
-	log.Fatal(http.ListenAndServe(":3000", router))
+	fmt.Printf("\n Corriendo en http://localhost:%s", port)
+	log.Fatal(http.ListenAndServe(port, router))
 }
