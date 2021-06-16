@@ -32,13 +32,18 @@ func GetPruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetClusterEndpoint(w http.ResponseWriter, req *http.Request) {
+	var Cluster []km.Prueba
 	params := mux.Vars(req)
-	w.Header().Set("Content-Type", "application/json")
 	for _, item := range km.Pruebas2 {
+		w.Header().Set("Content-Type", "application/json")
 		id_prueba, _ = strconv.Atoi(params["id"])
 		if item.Cluster == id_prueba {
-			json.NewEncoder(w).Encode(item)
+			Cluster = append(Cluster, item)
 		}
+	}
+	if Cluster != nil {
+		json.NewEncoder(w).Encode(Cluster)
+		return
 	}
 	out_msg := fmt.Sprint("Prueba no encontrada con id ", id_prueba)
 	json.NewEncoder(w).Encode(out_msg)
