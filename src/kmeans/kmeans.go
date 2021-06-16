@@ -145,7 +145,7 @@ func ReadCSVFromUrl(url string) ([][]string, error) {
 }
 
 func Add() {
-	url := "https://raw.githubusercontent.com/aduii/api-kmeas-prueba/master/src/data/data2.csv"
+	url := "https://raw.githubusercontent.com/aduii/api-kmeans-conc/master/src/data/data2.csv"
 	filedata, err := ReadCSVFromUrl(url)
 	if err != nil {
 		panic(err)
