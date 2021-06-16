@@ -15,8 +15,14 @@ import (
 
 var id_prueba int
 
+//Habilitar CORS
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 //EndPoints
 func GetPruebaEndpoint(w http.ResponseWriter, req *http.Request) {
+	enableCors(&w)
 	params := mux.Vars(req)
 	w.Header().Set("Content-Type", "application/json")
 	for _, item := range km.Pruebas2 {
@@ -32,6 +38,7 @@ func GetPruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetClusterEndpoint(w http.ResponseWriter, req *http.Request) {
+	enableCors(&w)
 	var Cluster []km.Prueba
 	params := mux.Vars(req)
 	for _, item := range km.Pruebas2 {
@@ -50,11 +57,13 @@ func GetClusterEndpoint(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetPruebasEndpoint(w http.ResponseWriter, req *http.Request) {
+	enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(km.Pruebas2)
 }
 
 func CreatePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
+	enableCors(&w)
 	params := mux.Vars(req)
 	var Prueba km.Prueba
 	_ = json.NewDecoder(req.Body).Decode(&Prueba)
@@ -66,6 +75,7 @@ func CreatePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 }
 
 func DeletePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
+	enableCors(&w)
 	params := mux.Vars(req)
 	id_prueba, _ = strconv.Atoi(params["id"])
 	for index, item := range km.Pruebas2 {
