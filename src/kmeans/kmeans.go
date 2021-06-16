@@ -13,7 +13,7 @@ import (
 type Prueba struct {
 	Id          int     `json:"id"`
 	Date        string  `json:"fecha"`
-	Type        string  `json:"tipo-muestra"`
+	Type        string  `json:"tipomuestra"`
 	Result      int     `json:"resultado"`
 	Age         int     `json:"edad"`
 	Sex         int     `json:"sexo"`
