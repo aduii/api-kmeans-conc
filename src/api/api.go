@@ -31,6 +31,19 @@ func GetPruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 	// json.NewEncoder(w).Encode(&Prueba{})
 }
 
+func GetClusterEndpoint(w http.ResponseWriter, req *http.Request) {
+	params := mux.Vars(req)
+	w.Header().Set("Content-Type", "application/json")
+	for _, item := range km.Pruebas2 {
+		id_prueba, _ = strconv.Atoi(params["id"])
+		if item.Cluster == id_prueba {
+			json.NewEncoder(w).Encode(item)
+		}
+	}
+	out_msg := fmt.Sprint("Prueba no encontrada con id ", id_prueba)
+	json.NewEncoder(w).Encode(out_msg)
+}
+
 func GetPruebasEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(km.Pruebas2)
@@ -70,6 +83,7 @@ func HandleFunc() {
 	apiRouter := router.PathPrefix("/api").Subrouter()
 	apiRouter.HandleFunc("/pruebas", GetPruebasEndpoint).Methods("GET")
 	apiRouter.HandleFunc("/pruebas/{id}", GetPruebaEndpoint).Methods("GET")
+	apiRouter.HandleFunc("/clusters/{id}", GetClusterEndpoint).Methods("GET")
 	apiRouter.HandleFunc("/pruebas/{id}", CreatePruebaEndpoint).Methods("POST")
 	apiRouter.HandleFunc("/pruebas/{id}", DeletePruebaEndpoint).Methods("DELETE")
 
