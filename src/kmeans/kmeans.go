@@ -3,10 +3,9 @@ package kmeans
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"math"
 	"math/rand"
-	"os"
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -83,7 +82,7 @@ func Calc_Dist_Min() {
 }
 
 func Calc_PromxClus() {
-	var cclus1, cclus2 int = 0, 0
+	var cclus1, cclus2 int = 1, 1
 	var sclus1_v1, sclus1_v2, sclus2_v1, sclus2_v2 float64 = 0, 0, 0, 0
 	var prom_clus1_v1, prom_clus1_v2, prom_clus2_v1, prom_clus2_v2 int = 0, 0, 0, 0
 	for i := 0; i < len(Pruebas); i++ {
@@ -126,19 +125,32 @@ func stoInt(v string) int {
 	return vint
 }
 
-func checkError(msg string, err error) {
+func ReadCSVFromUrl(url string) ([][]string, error) {
+	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(msg, err)
+		return nil, err
 	}
+
+	defer resp.Body.Close()
+	reader := csv.NewReader(resp.Body)
+	reader.Comma = ','
+	reader.LazyQuotes = true
+	reader.FieldsPerRecord = -1
+	data, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 func Add() {
+	url := "https://raw.githubusercontent.com/aduii/api-kmeas-prueba/master/src/data/data2.csv"
+	filedata, err := ReadCSVFromUrl(url)
+	if err != nil {
+		panic(err)
+	}
 	// adding example data
-	filepath := "data/data2.csv"
-	openfile, err := os.Open(filepath)
-	checkError("Error in opening the file\n", err)
-	filedata, err := csv.NewReader(openfile).ReadAll()
-	checkError("Error in reading the file\n", err)
 
 	for i, value := range filedata {
 		Pruebas = append(Pruebas, Prueba{

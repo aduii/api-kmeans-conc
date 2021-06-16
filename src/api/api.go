@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	km "github.com/aduii/api-kmeans-conc/src/kmeans"
@@ -60,13 +61,19 @@ func DeletePruebaEndpoint(w http.ResponseWriter, req *http.Request) {
 }
 
 func HandleFunc() {
+	var port = os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
+	}
 	router := mux.NewRouter()
-	port := ":3000"
-	router.HandleFunc("/pruebas", GetPruebasEndpoint).Methods("GET")
-	router.HandleFunc("/pruebas/{id}", GetPruebaEndpoint).Methods("GET")
-	router.HandleFunc("/pruebas/{id}", CreatePruebaEndpoint).Methods("POST")
-	router.HandleFunc("/pruebas/{id}", DeletePruebaEndpoint).Methods("DELETE")
+	apiRouter := router.PathPrefix("/api").Subrouter()
+	apiRouter.HandleFunc("/pruebas", GetPruebasEndpoint).Methods("GET")
+	apiRouter.HandleFunc("/pruebas/{id}", GetPruebaEndpoint).Methods("GET")
+	apiRouter.HandleFunc("/pruebas/{id}", CreatePruebaEndpoint).Methods("POST")
+	apiRouter.HandleFunc("/pruebas/{id}", DeletePruebaEndpoint).Methods("DELETE")
 
 	fmt.Printf("\n Corriendo en http://localhost:%s", port)
-	log.Fatal(http.ListenAndServe(port, router))
+	portd := ":" + port
+	log.Fatal(http.ListenAndServe(portd, router))
 }
