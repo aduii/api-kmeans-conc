@@ -2,7 +2,6 @@ package kmeans
 
 import (
 	"encoding/csv"
-	"fmt"
 	"math"
 	"math/rand"
 	"net/http"
@@ -118,6 +117,7 @@ func Iteraciones() {
 		Calc_PromxClus()
 		iteraciones++
 	}
+	AddFinal()
 }
 
 func stoInt(v string) int {
@@ -191,8 +191,5 @@ func AddFinal() {
 
 func Kmeans() {
 	Add()
-	Iteraciones()
-	AddFinal()
-	fmt.Println("Cluster Asignado: ")
-	fmt.Println(IndClusterAsignado)
+	go Iteraciones()
 }
