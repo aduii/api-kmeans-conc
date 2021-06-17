@@ -65,17 +65,16 @@ func Calc_Dist_Euclidiana() {
 }
 
 func Calc_Dist_Min() {
-	cluster1 := 1
-	cluster2 := 2
+	var clusters = []int{1, 2}
 	for i, _ := range DistIndCen {
 		if DistIndCen[i][0] < DistIndCen[i][1] {
 			a := DistIndCen[i][0]
 			DistMinIndCen = append(DistMinIndCen, a)
-			IndClusterAsignado = append(IndClusterAsignado, cluster1)
+			IndClusterAsignado = append(IndClusterAsignado, clusters[0])
 		} else {
 			b := DistIndCen[i][1]
 			DistMinIndCen = append(DistMinIndCen, b)
-			IndClusterAsignado = append(IndClusterAsignado, cluster2)
+			IndClusterAsignado = append(IndClusterAsignado, clusters[1])
 		}
 	}
 }
