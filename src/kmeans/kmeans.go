@@ -106,7 +106,7 @@ func Calc_PromxClus() {
 
 func Iteraciones() {
 	iteraciones := 0
-	for iteraciones < 20 {
+	for iteraciones < 50 {
 		DistIndCen = [][]float64{}
 		DistMinIndCen = []float64{}
 		IndClusterAsignado = []int{}
